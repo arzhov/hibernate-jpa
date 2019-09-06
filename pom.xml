@@ -11,7 +11,7 @@
     <properties>
         <version.java>1.8</version.java>
 
-        <hibernate-entitymanager.version>5.4.4.Final</hibernate-entitymanager.version>
+        <hibernate.version>5.4.4.Final</hibernate.version>
         <h2.version>1.4.199</h2.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
 
@@ -28,8 +28,14 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate-entitymanager.version}</version>
+            <version>${hibernate.version}</version>
         </dependency>
+
+	    <dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>${hibernate.version}</version>
+	    </dependency>
 
         <!-- Database -->
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
@@ -53,5 +59,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
