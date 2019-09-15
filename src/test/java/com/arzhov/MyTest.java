@@ -25,7 +25,7 @@ public class MyTest {
 
 	@Before
 	public void initEntityManager() {
-		emf = Persistence.createEntityManagerFactory("MySQL");
+		emf = Persistence.createEntityManagerFactory("Oracle");
 		bookService = new BookService(emf.createEntityManager());
 	}
 
@@ -43,6 +43,7 @@ public class MyTest {
 		em.persist(book);
 		em.getTransaction().commit();
 //        em.clear();
+/*
 
 		book = new Book(100L, "T_____", "Des", 10.0f, "123456", 100);
 
@@ -52,6 +53,7 @@ public class MyTest {
         em.persist(mb);
         em.getTransaction().commit();
 //		em.flush();
+*/
 
 		em.close();
 	}
@@ -74,7 +76,7 @@ public class MyTest {
 
 	@Test
 	public void myTuple(){
-		bookService.createBook(200L, "T2", "Book 2", 10.0f, "1234-5678-5678", 200);
+		bookService.createBook(300L, "T3", "Book 2", 10.0f, "1234-5678-5678", 200);
 
 		final EntityManager em = emf.createEntityManager();
 		List<Tuple> results = em.createQuery("SELECT "+Book_.DESCRIPTION+" as "+Book_.DESCRIPTION+", "+Book_.ISBN+" as "+Book_.ISBN+" FROM Book b", Tuple.class).getResultList();
