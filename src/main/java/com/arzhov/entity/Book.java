@@ -1,22 +1,29 @@
 package com.arzhov.entity;
 
+import java.util.Date;
+import java.util.Objects;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
-public class Book {
+public class Book extends Item {
 
   // ======================================
   // =             Attributes             =
   // ======================================
 
-  @Id
-  private Long id;
-  private String title;
-  private String description;
-  private Float unitCost;
+  @Column(length = 15)
   private String isbn;
+
+  @Column(name = "nb_of_pages")
   private Integer nbOfPage;
+
+  @Column(name = "publication_date")
+  @Temporal(TemporalType.DATE)
+  private Date publicationDate;
 
   // ======================================
   // =            Constructors            =
@@ -25,60 +32,33 @@ public class Book {
   public Book() {
   }
 
-  public Book(Long id) {
-    this.id = id;
+  public Book(final String title) {
+    this.title = title;
   }
 
-  public Book(Long id, String title, String description, Float unitCost, String isbn, Integer nbOfPage) {
-    this.id = id;
+  public Book(final String title, final String isbn) {
+    this.title = title;
+    this.isbn = isbn;
+  }
+
+  public Book(final String title, final String description, final Float unitCost, final String isbn, final Integer nbOfPage, final Date publicationDate) {
     this.title = title;
     this.description = description;
     this.unitCost = unitCost;
     this.isbn = isbn;
     this.nbOfPage = nbOfPage;
+    this.publicationDate = publicationDate;
   }
 
   // ======================================
   // =          Getters & Setters         =
   // ======================================
 
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Float getUnitCost() {
-    return unitCost;
-  }
-
-  public void setUnitCost(Float unitCost) {
-    this.unitCost = unitCost;
-  }
-
   public String getIsbn() {
     return isbn;
   }
 
-  public void setIsbn(String isbn) {
+  public void setIsbn(final String isbn) {
     this.isbn = isbn;
   }
 
@@ -86,8 +66,16 @@ public class Book {
     return nbOfPage;
   }
 
-  public void setNbOfPage(Integer nbOfPage) {
+  public void setNbOfPage(final Integer nbOfPage) {
     this.nbOfPage = nbOfPage;
+  }
+
+  public Date getPublicationDate() {
+    return publicationDate;
+  }
+
+  public void setPublicationDate(final Date publicationDate) {
+    this.publicationDate = publicationDate;
   }
 
   // ======================================
@@ -95,15 +83,23 @@ public class Book {
   // ======================================
 
   @Override
+  public boolean equals(final Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    final Book book = (Book) o;
+    return Objects.equals(isbn, book.isbn) &&
+            Objects.equals(nbOfPage, book.nbOfPage) &&
+            Objects.equals(publicationDate, book.publicationDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), isbn, nbOfPage, publicationDate);
+  }
+
+  @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("Book{");
-    sb.append("id=").append(id);
-    sb.append(", title='").append(title).append('\'');
-    sb.append(", description='").append(description).append('\'');
-    sb.append(", unitCost=").append(unitCost);
-    sb.append(", isbn='").append(isbn).append('\'');
-    sb.append(", nbOfPage=").append(nbOfPage);
-    sb.append('}');
-    return sb.toString();
+    return "Book[" + "isbn=" + isbn + ", nbOfPage=" + nbOfPage + ", publicationDate=" + publicationDate + ", " + super.toString() + ']';
   }
 }

@@ -1,47 +1,51 @@
 package com.arzhov;
 
-import com.arzhov.entity.Book;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.sql.SQLException;
 
-public class Main {
+import com.arzhov.entity.CD;
 
-  public static void main(String[] args) {
+public final class Main {
 
-    System.out.println("\n\n>>> Executing : " + Main.class.toString() + " <<<\n");
+  private Main() {
+  }
 
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("MySQL");
-    EntityManager em = emf.createEntityManager();
+  public static void main(final String[] args) {
 
-    BookService service = new BookService(em);
+    System.out.println("\n\n>>> Executing : " + Main.class + " <<<\n");
 
-    // Creates and persists a Book
-    Book book = service.createBook(4044L, "H2G2", "Best IT Scifi Book", 12.5f, "1234-5678-5678", 247);
+    final EntityManagerFactory emf = Persistence.createEntityManagerFactory("MySQL");
+    final EntityManager em = emf.createEntityManager();
+    final EntityTransaction tx = em.getTransaction();
 
-    System.out.println("Book Persisted : " + book);
+    final ItemService service = new ItemService(em);
 
-    // Finds the book
-    book = service.findBook(4044L);
+    // Creates and persists a CD
+    tx.begin();
+    CD cd = new CD("Sergent Pepper");
+    cd = service.createCD(cd);
+    tx.commit();
 
-    System.out.println("Book Found     : " + book);
+    System.out.println("CD Persisted : " + cd);
 
-    // Raises the price of the book
-    book = service.raiseUnitCost(4044L, 12.5F);
+    // Finds the cd
+    cd = service.findCD(cd.getId());
 
-    System.out.println("Book Updated   : " + book);
+    System.out.println("CD Found     : " + cd);
 
-    // Removes the book
-    service.removeBook(4044L);
+    // Removes the cd
+    tx.begin();
+    service.removeCD(cd);
+    tx.commit();
 
-    System.out.println("Book Removed");
+    System.out.println("CD Removed");
 
-    // Finds the book
-    book = service.findBook(4044L);
+    // Finds the cd
+    cd = service.findCD(cd.getId());
 
-    System.out.println("Book Not Found : " + book);
+    System.out.println("CD Not Found : " + cd);
 
     em.close();
     emf.close();

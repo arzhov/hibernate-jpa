@@ -4,34 +4,14 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
 
-	<persistence-unit name="Oracle" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="MySQL" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<!-- Define the classes -->
-		<!--        <class>com.arzhov.entity.Book</class>-->
-		<!--        <class>com.arzhov.entity.Author</class>-->
-		<!--        <class>com.arzhov.entity.CD</class>-->
-		<exclude-unlisted-classes>false</exclude-unlisted-classes>
-
-		<properties>
-			<property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-			<property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521/ORCLPDB1"/>
-			<property name="javax.persistence.jdbc.user" value="test_user"/>
-			<property name="javax.persistence.jdbc.password" value="123456"/>
-
-			<property name="dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
-			<property name="hibernate.show_sql" value="true"/>
-			<property name="hibernate.hbm2ddl.auto" value="update"/>
-		</properties>
-	</persistence-unit>
-
-	<persistence-unit name="MySQL"  transaction-type="RESOURCE_LOCAL">
-		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
-		<!-- Define the classes -->
-<!--		<class>com.arzhov.entity.Book</class>-->
-<!--		<class>com.arzhov.entity.Author</class>-->
-<!--		<class>com.arzhov.entity.CD</class>-->
+		<class>com.arzhov.entity.Book</class>
+		<class>com.arzhov.entity.CD</class>
+		<class>com.arzhov.entity.Item</class>
+		<class>com.arzhov.entity.Musician</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 
 		<properties>
@@ -46,13 +26,14 @@
 		</properties>
 	</persistence-unit>
 
-	<persistence-unit name="Memory">
+	<persistence-unit name="Memory" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<!-- Define the classes -->
-<!--		<class>com.arzhov.entity.Book</class>-->
-<!--		<class>com.arzhov.entity.Author</class>-->
-<!--		<class>com.arzhov.entity.CD</class>-->
+		<class>com.arzhov.entity.Book</class>
+		<class>com.arzhov.entity.CD</class>
+		<class>com.arzhov.entity.Item</class>
+		<class>com.arzhov.entity.Musician</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
 
 		<properties>

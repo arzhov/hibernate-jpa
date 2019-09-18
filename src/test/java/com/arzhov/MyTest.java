@@ -1,92 +1,81 @@
 package com.arzhov;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.hibernate.LazyInitializationException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import com.arzhov.entity.Book;
-import com.arzhov.entity.Book_;
+import com.arzhov.entity.CD;
 
-public class MyTest {
-	private static EntityManagerFactory emf;
-	private static BookService bookService;
+public class MyTest extends BaseTest {
+    private static EntityManagerFactory emf;
+    private EntityManager em;
 
-	@Before
-	public void initEntityManager() {
-		emf = Persistence.createEntityManagerFactory("Oracle");
-		bookService = new BookService(emf.createEntityManager());
-	}
+    @BeforeAll
+    public static void initEntityManager() {
+        emf = Persistence.createEntityManagerFactory("MySQL");
+    }
 
-	@After
-	public void closeEntityManager() {
-		if (emf != null) emf.close();
-	}
+    @AfterAll
+    public static void closeEntityManager() {
+        if (emf != null) emf.close();
+    }
 
-	@Test
-	public void my() {
-		Book book = new Book(100L, "T", "Des", 10.0f, "123456", 100);
+    @Test
+    public void testLazyInitializationException() {
+        final CD cd = generateCD();
+        cd.addMusician(generateMusician());
+        cd.addMusician(generateMusician());
 
-		final EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.persist(book);
-		em.getTransaction().commit();
-//        em.clear();
-/*
-
-		book = new Book(100L, "T_____", "Des", 10.0f, "123456", 100);
-
-//        final Book mb = em.find(Book.class, book.getId());
-		final Book mb = em.merge(book);
+        em = emf.createEntityManager();
         em.getTransaction().begin();
-        em.persist(mb);
+        em.persist(cd);
         em.getTransaction().commit();
-//		em.flush();
-*/
+        em.clear();
+        em.close();
 
-		em.close();
-	}
+        em = emf.createEntityManager();
+        final CD findCD = em.find(CD.class, cd.getId());
+        em.close();
 
-	@Test
-	public void myCriteria(){
-		bookService.createBook(200L, "T2", "Book 2", 10.0f, "1234-5678-5678", 200);
+        assertNotNull(findCD);
+        assertNotNull(findCD.getId());
+        assertThrows(LazyInitializationException.class, () -> {
+            findCD.getMusicians().size();
+        });
+    }
 
-		final EntityManager em = emf.createEntityManager();
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Book> q = cb.createQuery(Book.class);
-		final Root<Book> root = q.from(Book.class);
-		q.select(root);
-		q.where(cb.like(root.get(Book_.description), "%Book%"));
+    @Test
+    public void testJoinFetch() {
+        final CD cd = generateCD();
+        cd.addMusician(generateMusician());
+        cd.addMusician(generateMusician());
 
-		final List<Book> resultList = em.createQuery(q).getResultList();
 
-		assertEquals(resultList.size(), 1);
-	}
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(cd);
+        em.getTransaction().commit();
+        em.close();
 
-	@Test
-	public void myTuple(){
-		bookService.createBook(300L, "T3", "Book 2", 10.0f, "1234-5678-5678", 200);
+        em = emf.createEntityManager();
+        final TypedQuery<CD> q = em.createQuery("from CD c join fetch c.musicians where c.id = :id", CD.class);
+        q.setParameter("id", cd.getId());
+        final CD findCD = q.getSingleResult();
+        em.close();
 
-		final EntityManager em = emf.createEntityManager();
-		List<Tuple> results = em.createQuery("SELECT "+Book_.DESCRIPTION+" as "+Book_.DESCRIPTION+", "+Book_.ISBN+" as "+Book_.ISBN+" FROM Book b", Tuple.class).getResultList();
-//		List<Tuple> results = em.createQuery("SELECT "+Book_.DESCRIPTION+", "+Book_.ISBN+" FROM Book b", Tuple.class).getResultList();
+        assertNotNull(findCD);
+        assertNotNull(findCD.getId());
+        assertEquals(findCD.getMusicians().size(), 2);
+    }
 
-		for (Tuple r : results) {
-			System.out.println("Book DESCRIPTION: "+r.get(Book_.DESCRIPTION));
-			System.out.println("Book ISBN: "+r.get(Book_.ISBN));
-		}
-
-		assertEquals(results.size(), 1);
-	}
 }

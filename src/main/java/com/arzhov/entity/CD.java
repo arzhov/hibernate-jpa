@@ -1,28 +1,36 @@
 package com.arzhov.entity;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+
 
 @Entity
-public class CD {
+public class CD extends Item {
 
   // ======================================
   // =             Attributes             =
   // ======================================
 
-  private Long id = null;
-
-  private String title;
-
-  private String description;
-
-  private Float unitCost;
-
+  @Column(name = "total_duration")
   private Float totalDuration;
 
   private String genre;
+
+  @OneToMany(
+//          mappedBy = "cd",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY
+  )
+  @JoinColumn(nullable=false)
+  private Set<Musician> musicians = new HashSet<>();
 
   // ======================================
   // =            Constructors            =
@@ -31,7 +39,16 @@ public class CD {
   public CD() {
   }
 
-  public CD(String title, String description, Float unitCost, Float totalDuration, String genre) {
+  public CD(final String title) {
+    this.title = title;
+  }
+
+  public CD(final String title, final String genre) {
+    this.title = title;
+    this.genre = genre;
+  }
+
+  public CD(final String title, final String description, final Float unitCost, final Float totalDuration, final String genre) {
     this.title = title;
     this.description = description;
     this.unitCost = unitCost;
@@ -43,62 +60,89 @@ public class CD {
   // =          Getters & Setters         =
   // ======================================
 
-  @Id
-  @GeneratedValue
-  public Long getId() {return id;}
+  public Long getId() {
+    return id;
+  }
 
-  public void setId(Long id) {
+  public void setId(final Long id) {
     this.id = id;
   }
 
-  @Column(length = 100)
-  public String getTitle() {return title;}
+  public String getTitle() {
+    return title;
+  }
 
-  public void setTitle(String title) {
+  public void setTitle(final String title) {
     this.title = title;
   }
 
-  @Column(length = 3000)
-  public String getDescription() {return description;}
+  public String getDescription() {
+    return description;
+  }
 
-  public void setDescription(String description) {
+  public void setDescription(final String description) {
     this.description = description;
   }
 
-  @Column(name = "unit_cost")
-  public Float getUnitCost() {return unitCost;}
+  public Float getUnitCost() {
+    return unitCost;
+  }
 
-  public void setUnitCost(Float unitCost) {
+  public void setUnitCost(final Float unitCost) {
     this.unitCost = unitCost;
   }
 
-  @Column(name = "total_duration")
-  public Float getTotalDuration() {return totalDuration;}
+  public Float getTotalDuration() {
+    return totalDuration;
+  }
 
-  public void setTotalDuration(Float totalDuration) {
+  public void setTotalDuration(final Float totalDuration) {
     this.totalDuration = totalDuration;
   }
 
-  public String getGenre() {return genre;}
+  public String getGenre() {
+    return genre;
+  }
 
-  public void setGenre(String genre) {
+  public void setGenre(final String genre) {
     this.genre = genre;
+  }
+
+  public Set<Musician> getMusicians() {
+    return musicians;
+  }
+
+  public void setMusicians(final Set<Musician> musicians) {
+    this.musicians = musicians;
+  }
+
+  public void addMusician(final Musician musician) {
+    this.musicians.add(musician);
   }
 
   // ======================================
   // =    hashcode, equals & toString     =
   // ======================================
 
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    final CD cd = (CD) o;
+    return Objects.equals(totalDuration, cd.totalDuration) &&
+            Objects.equals(genre, cd.genre) &&
+            Objects.equals(musicians, cd.musicians);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), totalDuration, genre, musicians);
+  }
+
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("CD{");
-    sb.append("id=").append(id);
-    sb.append(", title='").append(title).append('\'');
-    sb.append(", description='").append(description).append('\'');
-    sb.append(", unitCost=").append(unitCost);
-    sb.append(", totalDuration=").append(totalDuration);
-    sb.append(", genre='").append(genre).append('\'');
-    sb.append('}');
-    return sb.toString();
+    return "CD[" + "totalDuration=" + totalDuration + ", genre=" + genre + ", musicians=" + musicians + ", " + super.toString() + ']';
   }
 }
